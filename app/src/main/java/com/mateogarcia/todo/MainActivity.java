@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -18,7 +17,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> todoItems;
-    ArrayAdapter<String> aTodoAdapter;
+    // ArrayAdapter<String> aTodoAdapter;
+    ItemsAdapter itemsAdapter;
     ListView lvItems;
     EditText etEditText;
 
@@ -33,13 +33,13 @@ public class MainActivity extends AppCompatActivity {
         populateArrayItems();
 
         lvItems = (ListView) findViewById(R.id.lvlItems);
-        lvItems.setAdapter(aTodoAdapter);
+        lvItems.setAdapter(itemsAdapter);
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Must notify adapter that list view needs to be refreshed.
                 todoItems.remove(position);
-                aTodoAdapter.notifyDataSetChanged();
+                itemsAdapter.notifyDataSetChanged();
 
                 writeItems();
 
@@ -62,14 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void populateArrayItems() {
         todoItems = new ArrayList<String>();
-        /*
-        todoItems.add("I");
-        todoItems.add("Love");
-        todoItems.add("Making");
-        todoItems.add("Apps");
-        */
         readItems();
-        aTodoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todoItems);
+        itemsAdapter = new ItemsAdapter(this, todoItems);
     }
 
     private void readItems() {
@@ -93,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onAddItem(View view) {
-        aTodoAdapter.add(etEditText.getText().toString());
+        itemsAdapter.add(etEditText.getText().toString());
         etEditText.setText("");
         writeItems();
     }
@@ -103,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
             String editedText = data.getExtras().getString("updatedtext");
             todoItems.set(editingItem, editedText);
-            aTodoAdapter.notifyDataSetChanged();
+            itemsAdapter.notifyDataSetChanged();
             writeItems();
         }
     }
